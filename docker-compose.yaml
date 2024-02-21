@@ -1,0 +1,86 @@
+version: "3.9"
+name: camunda_postgres_kafka
+
+services:
+  zookeeper:
+    container_name: zookeeper
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 22181:2181
+    networks:
+      - app-network
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - 29092:29092
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      #      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - app-network
+
+  postgres:
+    image: postgres:13.3
+    container_name: postgres
+    environment:
+      POSTGRES_DB: "camunda"
+#      POSTGRES_MULTIPLE_DATABASES: platform, camunda
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+    #    volumes:
+    #      - ./db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d postgres" ]
+      interval: 1s
+      timeout: 10s
+      retries: 60
+    networks:
+      - app-network
+
+  camundakafka:
+    image: camunda/kafka:v1
+    container_name: camundakafka
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+      - kafka
+    links:
+      - kafka
+    networks:
+      - app-network
+
+  camundacore:
+    image: camunda/core:v1
+    container_name: camundacore
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - kafka
+    links:
+      - kafka
+    networks:
+      - app-network
+
+
+networks:
+  app-network:
+    driver: bridge
