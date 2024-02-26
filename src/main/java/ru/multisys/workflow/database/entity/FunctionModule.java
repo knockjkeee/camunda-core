@@ -1,4 +1,4 @@
-package ru.multisys.workflow.domain.db;
+package ru.multisys.workflow.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
