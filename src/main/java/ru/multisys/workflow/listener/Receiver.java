@@ -55,8 +55,8 @@ public class Receiver {
         // init processEngine
         Map<String, Object> req = new HashMap<>();
         req.put("ticket", payload);
-        Instant now = Instant.now();
-        req.put("initTime", now.toString());
+//        Instant now = Instant.now();
+//        req.put("initTime", now.toString());
 
         processEngine
                 .getRuntimeService()
