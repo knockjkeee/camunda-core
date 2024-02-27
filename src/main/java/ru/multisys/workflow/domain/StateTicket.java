@@ -5,6 +5,8 @@ package ru.multisys.workflow.domain;
  * @created 26/02/2024 - 14:50
  */
 public enum StateTicket {
+
+    INIT("init"),
     NEW("new"),
     OPEN("open"),
     CLOSE("close"),

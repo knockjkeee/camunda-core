@@ -5,9 +5,13 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.log4j.Log4j2;
+import org.apache.logging.log4j.util.Strings;
 import org.camunda.bpm.engine.delegate.DelegateExecution;
 import org.camunda.bpm.engine.delegate.JavaDelegate;
+import org.camunda.commons.utils.StringUtil;
 import org.springframework.stereotype.Component;
+import ru.multisys.workflow.database.dao.TasksDao;
+import ru.multisys.workflow.database.entity.TasksEntity;
 import ru.multisys.workflow.domain.NewTicket;
 import ru.multisys.workflow.domain.StateTicket;
 
@@ -31,24 +35,41 @@ public class Start implements JavaDelegate {
 //        this.objectMapper = objectMapper;
 //    }
 
+    private static final String NAME_TIME = "newTime";
+
     ObjectMapper objectMapper;
+
+    TasksDao tasksDao;
 
     @Override
     public void execute(DelegateExecution execution) throws Exception {
-
-
-        NewTicket ticket = (NewTicket) execution.getVariable("ticket");
-
-        String now = Instant.now().toString();
-
         log.info("Start!!!");
 
-        execution.setVariables(
-                new HashMap<>(){{
-                    put("workTime", now);
-                    put("target", StateTicket.START.nameLowerCase());
-                    put("ticketEntity", objectMapper.writeValueAsString(ticket));
-                }}
-        );
+        execution.setVariables(new HashMap<>() {{
+            if (Strings.isEmpty(((String) execution.getVariable(NAME_TIME)))) {
+                Instant now = Instant.now();
+                put(NAME_TIME, now.toString());
+                put("target", StateTicket.START.nameLowerCase());
+
+                TasksEntity tasks = tasksDao.findByProcessInstanceId(execution.getProcessInstanceId());
+
+                if (tasks == null) {
+
+                    TasksEntity newTasks = new TasksEntity();
+//        tasks.setProcessInstanceId(processInstanceId);
+                    newTasks.setInitStamp(Instant.parse((String) execution.getVariable("initTime")));
+                    newTasks.setStartStamp(now);
+                    newTasks.setState(StateTicket.START);
+                    newTasks.setProcessInstanceId(execution.getProcessInstanceId());
+                    tasksDao.save(newTasks);
+                } else {
+                    tasks.setState(StateTicket.START);
+                    tasks.setStartStamp(now);
+                    tasksDao.save(tasks);
+                }
+            }
+//                    put("target", StateTicket.START.nameLowerCase());
+//                    put("ticketEntity", objectMapper.writeValueAsString(ticket));
+        }});
     }
 }

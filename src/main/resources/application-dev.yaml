@@ -14,6 +14,15 @@ spring:
     restart:
       poll-interval: 2s
       quiet-period: 1s
+  kafka:
+    consumer:
+      group-id: camunda-receiver
+      auto-offset-reset: earliest
+    # change this property if you are using your own
+    # Kafka cluster or your Docker IP is different
+    #    bootstrap-servers: kafka:9092
+    bootstrap-servers: localhost:9092
+  #    bootstrap-servers: 192.168.246.30:29092
 
 camunda.bpm:
   admin-user:
@@ -25,3 +34,11 @@ camunda.bpm:
     create: All Tasks
 #  default-serialization-format: application/json
 server.port: 8080
+
+
+tpd:
+  topic-name: advice-topic
+  messages-per-request: 10
+
+camunda:
+  endpoint: http://localhost:8080/startEvent
