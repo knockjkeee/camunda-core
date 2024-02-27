@@ -11,6 +11,7 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Component;
 import ru.multisys.workflow.database.dao.TasksDao;
 import ru.multisys.workflow.database.entity.TasksEntity;
+import ru.multisys.workflow.domain.NewTicket;
 import ru.multisys.workflow.domain.StateTicket;
 
 import java.time.Instant;
@@ -27,47 +28,31 @@ import java.util.HashMap;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class Init implements JavaDelegate {
 
-//    private final ObjectMapper objectMapper;
-
-//    public Start(ObjectMapper objectMapper) {
-//        this.objectMapper = objectMapper;
-//    }
-
     private static final String NAME_TIME = "initTime";
 
-    ObjectMapper objectMapper;
-
     TasksDao tasksDao;
+    ObjectMapper objectMapper;
 
     @Override
     public void execute(DelegateExecution execution) throws Exception {
-        log.info("Start!!!");
+        log.info("Init!!!");
+        Instant now = Instant.now();
+
+        NewTicket ticket = (NewTicket)execution.getVariable("ticket");
+
+        TasksEntity newTasks = new TasksEntity();
+        newTasks.setInitStamp(now);
+        newTasks.setState(StateTicket.INIT);
+        newTasks.setProcessInstanceId(execution.getProcessInstanceId());
+        newTasks.setTicketID(ticket.getTicketID());
+        newTasks.setTicketNumber(ticket.getTicketNumber());
+        newTasks.setCustomerUserID(newTasks.getCustomerUserID());
+        newTasks.setUserID(newTasks.getUserID());
+        tasksDao.save(newTasks);
 
         execution.setVariables(new HashMap<>() {{
-            if (Strings.isEmpty(((String) execution.getVariable(NAME_TIME)))) {
-                Instant now = Instant.now();
-                put(NAME_TIME, now.toString());
-                put("target", StateTicket.START.nameLowerCase());
-
-                TasksEntity tasks = tasksDao.findByProcessInstanceId(execution.getProcessInstanceId());
-
-                if (tasks == null) {
-
-                    TasksEntity newTasks = new TasksEntity();
-//        tasks.setProcessInstanceId(processInstanceId);
-                    newTasks.setInitStamp(Instant.parse((String) execution.getVariable("initTime")));
-                    newTasks.setStartStamp(now);
-                    newTasks.setState(StateTicket.START);
-                    newTasks.setProcessInstanceId(execution.getProcessInstanceId());
-                    tasksDao.save(newTasks);
-                } else {
-                    tasks.setState(StateTicket.START);
-                    tasks.setStartStamp(now);
-                    tasksDao.save(tasks);
-                }
-            }
-//                    put("target", StateTicket.START.nameLowerCase());
-//                    put("ticketEntity", objectMapper.writeValueAsString(ticket));
+            put(NAME_TIME, now.toString());
+            put("target", StateTicket.INIT.nameLowerCase());
         }});
     }
 }
