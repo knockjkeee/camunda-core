@@ -8,13 +8,16 @@ import org.camunda.bpm.engine.ProcessEngine;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.multisys.workflow.database.dao.TasksDao;
+import ru.multisys.workflow.database.entity.TasksEntity;
 import ru.multisys.workflow.domain.NewTicket;
 import ru.multisys.workflow.service.OtrsService;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * @author knockjkeee
@@ -29,6 +32,8 @@ public class CamundaController {
     ProcessEngine processEngine;
 
     OtrsService otrsService;
+
+    TasksDao tasksDao;
 
     @PostMapping("/startEvent")
     public ResponseEntity<NewTicket> newTicket(@RequestBody NewTicket data) {
@@ -57,6 +62,17 @@ public class CamundaController {
         return new ResponseEntity<>(state, HttpStatus.OK);
     }
 
+    @GetMapping(value = {"/ke", "/ke/{id}"})
+    public ResponseEntity<List<TasksEntity>> getData(@PathVariable("id") Optional<Integer> id) {
+        List<TasksEntity> all = tasksDao.getAll();
 
+        if(id.isPresent()){
+            return new ResponseEntity<>(all, HttpStatus.OK);
+        }
+
+        List<TasksEntity> byFilter = all.stream().peek(e -> e.setExternalHistory(null)).collect(Collectors.toList());
+
+        return new ResponseEntity<>(byFilter, HttpStatus.OK);
+    }
 
 }

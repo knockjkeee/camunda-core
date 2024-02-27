@@ -28,6 +28,7 @@ public class CheckedState {
 
     //    StateTicket.END.nameLowerCase()
     public static List<String> closeState = List.of(
+            StateTicket.SOLVED.nameLowerCase(),
             StateTicket.PENDING_PLUS.nameLowerCase(),
             StateTicket.PENDING_MINUS.nameLowerCase(),
             StateTicket.REMOVED.nameLowerCase()

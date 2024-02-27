@@ -10,6 +10,7 @@ import ru.multisys.workflow.database.entity.TasksEntity;
 import ru.multisys.workflow.database.repo.TaskRepo;
 import ru.multisys.workflow.domain.StateTicket;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,18 +52,18 @@ public class TasksDao {
 
     @Transactional
     public void updateHistory(TasksEntity entity, ExternalHistoryEntity history) {
-        TasksEntity byProcessInstanceId = findByProcessInstanceId(entity.getProcessInstanceId());
+//        TasksEntity tasks = findByProcessInstanceId(entity.getProcessInstanceId());
 
-        if (byProcessInstanceId != null) {
-            history.setTasksEntity(byProcessInstanceId);
+        List<ExternalHistoryEntity> externalHistory = entity.getExternalHistory();
 
-            save(byProcessInstanceId);
-        } else {
-
-            history.setTasksEntity(entity);
-            save(entity);
+        if (externalHistory == null) {
+            externalHistory = new ArrayList<>();
         }
+        externalHistory.add(history);
+        entity.setExternalHistory(externalHistory);
+        history.setTasksEntity(entity);
 
+        save(entity);
     }
 
     @Transactional

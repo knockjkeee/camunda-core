@@ -3,33 +3,44 @@ package ru.multisys.workflow.database.entity;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.time.Instant;
 
 /**
  * @author knockjkeee
  * @created 20/02/2024 - 11:47
  */
 
-@Data
+@Setter
+@Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PROTECTED)
 @Entity
-@JsonIgnoreProperties(ignoreUnknown = true)
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "externalHistory")
 public class ExternalHistoryEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     Long id;
-    @Column(name = "name")
-    String name;
-    @ManyToOne
-    @JoinColumn(name="tasksEntity_id", nullable=false)
+
+    @Column(name = "target_state")
+    String targetState;
+
+    @Column(name = "external_state")
+    String externalState;
+
+    @Column(name = "state_transer")
+    Boolean stateTransfer;
+
+    @Column(name = "time_stamp")
+    Instant timeStamp;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "tasksEntity_id")
     private TasksEntity tasksEntity;
 }

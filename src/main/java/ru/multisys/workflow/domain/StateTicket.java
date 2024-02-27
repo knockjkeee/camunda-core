@@ -9,6 +9,7 @@ public enum StateTicket {
     INIT("init"),
     NEW("new"),
     OPEN("open"),
+    SOLVED("solved"),
     CLOSE("close"),
     CLOSE_SUCCESSFUL("closed successful"),
     CLOSE_UNSUCCESSFUL("closed unsuccessful"),

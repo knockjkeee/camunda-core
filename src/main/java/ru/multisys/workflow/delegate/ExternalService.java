@@ -11,6 +11,7 @@ import org.camunda.bpm.engine.delegate.JavaDelegate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import ru.multisys.workflow.database.dao.TasksDao;
+import ru.multisys.workflow.database.entity.ExternalHistoryEntity;
 import ru.multisys.workflow.database.entity.TasksEntity;
 import ru.multisys.workflow.domain.NewTicket;
 import ru.multisys.workflow.domain.StateTicket;
@@ -44,7 +45,6 @@ public class ExternalService implements JavaDelegate {
 
 //        String processDefinitionId = execution.getProcessDefinitionId();
 
-
         NewTicket ticket = (NewTicket) execution.getVariable("ticket");
         String id = ticket.getTicketID();
         String externalState = otrsService.getTask(id);
@@ -58,18 +58,26 @@ public class ExternalService implements JavaDelegate {
 
         log.info(String.format("ExternalService target - %s, res - %s, externalState - %s", target, res, externalState));
 
+        ExternalHistoryEntity externalHistory = new ExternalHistoryEntity();
+
+//        externalHistory.setTasksEntity(tasks);
+        externalHistory.setTimeStamp(Instant.now());
+        externalHistory.setTargetState(target);
+        externalHistory.setExternalState(externalState);
+        externalHistory.setStateTransfer(res);
+
         execution.setVariables(
                 new HashMap<>(){{
                     if (StateTicket.END.nameLowerCase().equals(target) && res) {
                         put("closeTime", now.toString());
-
                         tasks.setState(StateTicket.CLOSE);
                         tasks.setCloseStamp(now);
-                        tasksDao.save(tasks);
                     }
                     put("isChangeState", res);
                 }}
         );
+
+        tasksDao.updateHistory(tasks, externalHistory);
 
     }
 }

@@ -2,10 +2,7 @@ package ru.multisys.workflow.database.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.multisys.workflow.domain.StateTicket;
 
@@ -18,12 +15,13 @@ import java.util.Set;
  * @created 20/02/2024 - 11:43
  */
 
-@Data
+@Setter
+@Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PROTECTED)
 @Entity
-@JsonIgnoreProperties(ignoreUnknown = true)
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "tasks")
 public class TasksEntity {
 
@@ -60,7 +58,7 @@ public class TasksEntity {
     @Column(name = "closeStamp")
     Instant closeStamp;
 
-    @OneToMany(mappedBy = "tasksEntity")
+    @OneToMany(mappedBy = "tasksEntity", fetch = FetchType.EAGER, cascade = {CascadeType.ALL, CascadeType.PERSIST})
 //            @OneToMany
 //            @JoinColumn(name = "configurationModule_id")
     List<ExternalHistoryEntity> externalHistory;
