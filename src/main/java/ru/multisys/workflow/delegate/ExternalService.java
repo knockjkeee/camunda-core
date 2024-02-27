@@ -64,7 +64,7 @@ public class ExternalService implements JavaDelegate {
                         put("closeTime", now.toString());
 
                         tasks.setState(StateTicket.CLOSE);
-                        tasks.setStartStamp(now);
+                        tasks.setCloseStamp(now);
                         tasksDao.save(tasks);
                     }
                     put("isChangeState", res);

@@ -43,7 +43,7 @@ public class End implements JavaDelegate {
 
                         TasksEntity tasks = tasksDao.findByProcessInstanceId(execution.getProcessInstanceId());
                         tasks.setState(StateTicket.END);
-                        tasks.setStartStamp(now);
+                        tasks.setCloseStamp(now);
                         tasksDao.save(tasks);
                     }
 //                    put("target", StateTicket.END.nameLowerCase());

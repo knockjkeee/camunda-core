@@ -46,8 +46,8 @@ public class Init implements JavaDelegate {
         newTasks.setProcessInstanceId(execution.getProcessInstanceId());
         newTasks.setTicketID(ticket.getTicketID());
         newTasks.setTicketNumber(ticket.getTicketNumber());
-        newTasks.setCustomerUserID(newTasks.getCustomerUserID());
-        newTasks.setUserID(newTasks.getUserID());
+        newTasks.setCustomerUserID(ticket.getCustomerUserID());
+        newTasks.setUserID(ticket.getUserID());
         tasksDao.save(newTasks);
 
         execution.setVariables(new HashMap<>() {{
