@@ -68,19 +68,19 @@ services:
 #    networks:
 #      - app-network
 #
-#  camundacore:
-##    image: camunda/core:v1
+  camundacore:
+    image: camunda/core:v1
 #    image: knockjkeee/test:camunda_core
-#    container_name: camundacore
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      - postgres
-#      - kafka
-#    links:
-#      - kafka
-#    networks:
-#      - app-network
+    container_name: camundacore
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - kafka
+    links:
+      - kafka
+    networks:
+      - app-network
 
 
 networks:
