@@ -1,14 +1,11 @@
 package ru.multisys.workflow.database.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.multisys.workflow.domain.StateTicket;
 
-import java.time.Instant;
 import java.util.List;
-import java.util.Set;
 
 /**
  * @author knockjkeee
@@ -44,19 +41,19 @@ public class TasksEntity {
     StateTicket state;
 
     @Column(name = "initStamp")
-    Instant initStamp;
+    String initStamp;
 
     @Column(name = "startStamp")
-    Instant startStamp;
+    String startStamp;
 
     @Column(name = "workStamp")
-    Instant workStamp;
+    String workStamp;
 
     @Column(name = "endStamp")
-    Instant endStamp;
+    String endStamp;
 
     @Column(name = "closeStamp")
-    Instant closeStamp;
+    String closeStamp;
 
     @OneToMany(mappedBy = "tasksEntity", fetch = FetchType.EAGER, cascade = {CascadeType.ALL, CascadeType.PERSIST})
 //            @OneToMany

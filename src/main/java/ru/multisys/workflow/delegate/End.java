@@ -13,6 +13,7 @@ import ru.multisys.workflow.database.entity.TasksEntity;
 import ru.multisys.workflow.domain.StateTicket;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -37,13 +38,13 @@ public class End implements JavaDelegate {
         execution.setVariables(
                 new HashMap<>(){{
                     if (Strings.isEmpty(((String) execution.getVariable(NAME_TIME)))){
-                        Instant now = Instant.now();
-                        put(NAME_TIME, now.toString());
+                        String now = ZonedDateTime.now().toLocalDateTime().toString();
+                        put(NAME_TIME, now);
                         put("target", StateTicket.END.nameLowerCase());
 
                         TasksEntity tasks = tasksDao.findByProcessInstanceId(execution.getProcessInstanceId());
                         tasks.setState(StateTicket.END);
-                        tasks.setCloseStamp(now);
+                        tasks.setEndStamp(now);
                         tasksDao.save(tasks);
                     }
 //                    put("target", StateTicket.END.nameLowerCase());

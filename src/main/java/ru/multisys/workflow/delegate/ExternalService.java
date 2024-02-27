@@ -19,6 +19,8 @@ import ru.multisys.workflow.service.CheckedState;
 import ru.multisys.workflow.service.OtrsService;
 
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -51,7 +53,8 @@ public class ExternalService implements JavaDelegate {
         ticket.setState(externalState);
 
         String target = (String) execution.getVariable("target");
-        Instant now = Instant.now();
+//        Instant now = Instant.now();
+        String now = ZonedDateTime.now().toLocalDateTime().toString();
 
         TasksEntity tasks = tasksDao.findByProcessInstanceId(execution.getProcessInstanceId());
         boolean res = CheckedState.nextState(target, externalState);
@@ -60,8 +63,7 @@ public class ExternalService implements JavaDelegate {
 
         ExternalHistoryEntity externalHistory = new ExternalHistoryEntity();
 
-//        externalHistory.setTasksEntity(tasks);
-        externalHistory.setTimeStamp(Instant.now());
+        externalHistory.setTimeStamp(Instant.now().toString());
         externalHistory.setTargetState(target);
         externalHistory.setExternalState(externalState);
         externalHistory.setStateTransfer(res);
@@ -69,7 +71,7 @@ public class ExternalService implements JavaDelegate {
         execution.setVariables(
                 new HashMap<>(){{
                     if (StateTicket.END.nameLowerCase().equals(target) && res) {
-                        put("closeTime", now.toString());
+                        put("closeTime", now);
                         tasks.setState(StateTicket.CLOSE);
                         tasks.setCloseStamp(now);
                     }

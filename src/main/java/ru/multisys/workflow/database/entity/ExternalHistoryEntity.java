@@ -1,12 +1,9 @@
 package ru.multisys.workflow.database.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.Instant;
 
 /**
  * @author knockjkeee
@@ -33,11 +30,12 @@ public class ExternalHistoryEntity {
     @Column(name = "external_state")
     String externalState;
 
+//    Europe/Moscow
     @Column(name = "state_transer")
     Boolean stateTransfer;
 
     @Column(name = "time_stamp")
-    Instant timeStamp;
+    String timeStamp;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

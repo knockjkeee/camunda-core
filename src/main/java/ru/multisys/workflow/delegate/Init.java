@@ -15,6 +15,7 @@ import ru.multisys.workflow.domain.NewTicket;
 import ru.multisys.workflow.domain.StateTicket;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 import java.util.HashMap;
 
 /**
@@ -36,7 +37,7 @@ public class Init implements JavaDelegate {
     @Override
     public void execute(DelegateExecution execution) throws Exception {
         log.info("Init!!!");
-        Instant now = Instant.now();
+        String now = ZonedDateTime.now().toLocalDateTime().toString();
 
         NewTicket ticket = (NewTicket)execution.getVariable("ticket");
 
@@ -51,7 +52,7 @@ public class Init implements JavaDelegate {
         tasksDao.save(newTasks);
 
         execution.setVariables(new HashMap<>() {{
-            put(NAME_TIME, now.toString());
+            put(NAME_TIME, now);
             put("target", StateTicket.INIT.nameLowerCase());
         }});
     }
