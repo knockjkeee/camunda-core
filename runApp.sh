@@ -8,3 +8,5 @@ fi
 mvn clean install
 
 docker build . --tag=camunda/core:v1
+
+docker compose up -d

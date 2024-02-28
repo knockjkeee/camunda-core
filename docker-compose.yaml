@@ -54,23 +54,9 @@ services:
     networks:
       - app-network
 
-#  camundakafka:
-##    image: camunda/kafka:v1
-#    image: knockjkeee/test:camunda_kafka
-#    container_name: camundakafka
-#    ports:
-#      - "8081:8081"
-#    depends_on:
-#      - postgres
-#      - kafka
-#    links:
-#      - kafka
-#    networks:
-#      - app-network
-#
   camundacore:
-    image: camunda/core:v1
-#    image: knockjkeee/test:camunda_core
+#    image: camunda/core:v1
+    image: knockjkeee/test:camunda_lates
     container_name: camundacore
     ports:
       - "8080:8080"
